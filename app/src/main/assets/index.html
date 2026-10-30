@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#313b9b"><title>رنگین‌دانش</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f3ff;color:#20244d;font-family:Tahoma,sans-serif}main{max-width:560px;margin:auto;padding:16px}.hero{background:linear-gradient(130deg,#313b9b,#7655e8);color:white;padding:24px;border-radius:24px}.hero h1{margin:0 0 8px}.stats,.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.stat,.tile,.panel{background:white;border-radius:16px;padding:15px;box-shadow:0 4px 16px #3332}.stat{background:#ffffff22;text-align:center;color:white}.tile{border:0;text-align:right;font:inherit;font-weight:bold;color:#252957;min-height:100px}.tile span{display:block;font-size:26px;margin-bottom:8px}.panel{margin-top:14px;padding:18px}.btn,.opt{width:100%;border:0;border-radius:13px;padding:14px;margin-top:9px;font:inherit;font-weight:bold;background:#6257e8;color:white}.opt{background:#f0efff;color:#292d62;text-align:right;border:2px solid transparent}.opt:disabled{opacity:1}.good{border-color:#0b9b78;background:#e7fff6}.bad{border-color:#d94763;background:#fff0f3}.muted{color:#737899;font-size:13px}.hide{display:none}.q{font-size:20px;line-height:1.8;font-weight:bold}.row{display:flex;justify-content:space-between;gap:10px}
+</style></head><body><main>
+<section id="home"><header class="hero"><h1>🌈 رنگین‌دانش</h1><div>بازی کن، فکر کن، هر روز چیز تازه‌ای یاد بگیر!</div><div class="stats"><div class="stat"><b id="best">۰</b><small>بهترین امتیاز</small></div><div class="stat"><b id="played">۰</b><small>بازی انجام‌شده</small></div></div></header><h3>🎯 یک بخش را انتخاب کن</h3><div class="grid"><button class="tile" onclick="start('general')"><span>🌍</span>اطلاعات عمومی<small class="muted">علوم، تاریخ و جغرافیا</small></button><button class="tile" onclick="start('brain')"><span>🧠</span>بازی فکری<small class="muted">معما و هوش</small></button><button class="tile" onclick="learn()"><span>📚</span>یادگیری<small class="muted">دانستنی با پاسخ</small></button><button class="tile" onclick="start('daily')"><span>📅</span>چالش روزانه<small class="muted">۵ سؤال برای رکورد</small></button></div><button class="btn" onclick="records()">🏆 رکوردها</button><button class="btn" onclick="share()">📤 اشتراک‌گذاری بازی</button><p class="muted">نسخه آفلاین • اطلاعات روی همین دستگاه ذخیره می‌شود</p></section>
+<section id="game" class="hide"><div class="row"><button class="btn" onclick="home()">خروج</button><b id="count"></b><b id="score"></b></div><div class="panel"><div class="muted" id="cat"></div><p class="q" id="question"></p><div id="opts"></div><p id="explain"></p><button id="next" class="btn hide" onclick="next()">سؤال بعدی ←</button></div></section>
+<section id="result" class="hide"><div class="panel"><h2>🏆 نتیجه بازی</h2><h1 id="final"></h1><p id="summary"></p><button class="btn" onclick="start(mode)">دوباره بازی کن</button><button class="btn" onclick="home()">صفحه اصلی</button></div></section>
+<section id="other" class="hide"><div class="panel"><h2 id="title"></h2><div id="content"></div><button class="btn" onclick="home()">بازگشت</button></div></section>
+</main><script>
+const qs=[
+['جغرافیا','آسان','پایتخت ایران کدام شهر است؟',['شیراز','تهران','اصفهان','تبریز'],1,'تهران پایتخت ایران است.'],
+['علوم','آسان','کدام سیاره به سیاره سرخ معروف است؟',['زهره','مشتری','مریخ','عطارد'],2,'اکسید آهن سطح مریخ را سرخ‌رنگ می‌کند.'],
+['علوم','آسان','گیاهان در فتوسنتز کدام گاز را جذب می‌کنند؟',['اکسیژن','دی‌اکسید کربن','هلیم','هیدروژن'],1,'گیاهان با نور، آب و دی‌اکسید کربن غذا می‌سازند.'],
+['تاریخ','متوسط','تخت جمشید در نزدیکی کدام شهر است؟',['کرمان','شیراز','رشت','مشهد'],1,'تخت جمشید در استان فارس و نزدیک مرودشت است.'],
+['جغرافیا','متوسط','بزرگ‌ترین اقیانوس جهان کدام است؟',['اطلس','هند','آرام','منجمد شمالی'],2,'اقیانوس آرام بزرگ‌ترین اقیانوس زمین است.'],
+['علوم','آسان','کدام اندام خون را پمپ می‌کند؟',['ریه','معده','قلب','کلیه'],2,'قلب خون را در رگ‌ها به گردش درمی‌آورد.'],
+['دانستنی','متوسط','نور خورشید تقریباً چند دقیقه تا زمین در راه است؟',['۸ دقیقه','۸ ثانیه','یک ساعت','۲۴ ساعت'],0,'نور خورشید حدود ۸ دقیقه و ۲۰ ثانیه در راه است.'],
+['هوش','آسان','عدد بعدی چیست؟ ۲، ۴، ۶، ۸، ؟',['۹','۱۰','۱۲','۱۴'],1,'در هر مرحله ۲ واحد اضافه می‌شود.'],
+['هوش','متوسط','اگر امروز دوشنبه باشد، سه روز دیگر چه روزی است؟',['سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'],2,'سه روز پس از دوشنبه، پنجشنبه است.'],
+['علوم','سخت','بیشتر DNA سلول یوکاریوتی در کدام بخش است؟',['هسته','غشا','سیتوپلاسم','ریبوزوم'],0,'بیشتر اطلاعات ژنتیکی در هسته قرار دارد.'],
+['جغرافیا','متوسط','خط استوا زمین را به چه دو نیم‌کره‌ای تقسیم می‌کند؟',['شرقی و غربی','شمالی و جنوبی','خشکی و آبی','گرم و سرد'],1,'خط استوا مرز نیم‌کره شمالی و جنوبی است.'],
+['تاریخ','سخت','کدام تمدن از نخستین کاربردکنندگان خط میخی بود؟',['سومر','مایا','اینکا','روم'],0,'سومریان از نخستین تمدن‌های دارای خط میخی بودند.'],
+['علوم','متوسط','آب در فشار معمول در چند درجه می‌جوشد؟',['۰','۵۰','۱۰۰','۱۵۰'],2,'نقطه جوش آب در فشار یک اتمسفر ۱۰۰ درجه است.'],
+['دانستنی','متوسط','کدام پستاندار تخم‌گذار است؟',['خفاش','پلاتیپوس','دلفین','گربه'],1,'پلاتیپوس از پستانداران تخم‌گذار است.'],
+['هوش','متوسط','پدر ۴۰ سال و فرزند ۱۰ سال دارد؛ چند سال دیگر پدر دو برابر فرزند است؟',['۱۰','۱۵','۲۰','۳۰'],2,'۲۰ سال بعد سن آن‌ها ۶۰ و ۳۰ سال می‌شود.'],
+['جغرافیا','سخت','بزرگ‌ترین قاره جهان کدام است؟',['آفریقا','آسیا','اروپا','آمریکای جنوبی'],1,'آسیا بزرگ‌ترین قاره از نظر مساحت است.']
+];
+let store=JSON.parse(localStorage.getItem('rd')||'{"best":0,"played":0}'),round=[],pos=0,score=0,correct=0,mode='general';
+const fa=n=>Number(n).toLocaleString('fa-IR'),$=id=>document.getElementById(id);
+function save(){localStorage.setItem('rd',JSON.stringify(store))}
+function show(id){['home','game','result','other'].forEach(x=>$(x).classList.add('hide'));$(id).classList.remove('hide')}
+function home(){$('best').textContent=fa(store.best);$('played').textContent=fa(store.played);show('home')}
+function start(m){mode=m;let pool=m==='brain'?qs.filter(q=>q[0]==='هوش'):m==='general'?qs.filter(q=>q[0]!=='هوش'):qs;round=pool.slice().sort(()=>Math.random()-.5).slice(0,m==='daily'?5:8);pos=score=correct=0;show('game');render()}
+function render(){let q=round[pos];$('count').textContent='سؤال '+fa(pos+1)+' از '+fa(round.length);$('score').textContent=fa(score)+' امتیاز';$('cat').textContent=q[0]+' • '+q[1];$('question').textContent=q[2];$('explain').textContent='';$('next').classList.add('hide');$('opts').innerHTML='';q[3].forEach((v,i)=>{let b=document.createElement('button');b.className='opt';b.textContent=['الف','ب','ج','د'][i]+') '+v;b.onclick=()=>answer(i,b);$('opts').appendChild(b)})}
+function answer(i,b){let q=round[pos];document.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j===q[4])x.classList.add('good')});if(i!==q[4])b.classList.add('bad');else{score+=q[1]==='آسان'?10:q[1]==='متوسط'?20:30;correct++}$('score').textContent=fa(score)+' امتیاز';$('explain').textContent=(i===q[4]?'✅ درست! ':'❌ پاسخ درست: '+q[3][q[4]]+'؛ ')+q[5];$('next').textContent=pos===round.length-1?'دیدن نتیجه 🏁':'سؤال بعدی ←';$('next').classList.remove('hide')}
+function next(){pos++;if(pos<round.length)render();else{store.played++;store.best=Math.max(store.best,score);save();$('final').textContent=fa(score)+' امتیاز';$('summary').textContent=fa(correct)+' پاسخ درست از '+fa(round.length)+' سؤال';show('result')}}
+function learn(){ $('title').textContent='📚 یادگیری';$('content').innerHTML=qs.slice(0,8).map(q=>'<p><b>'+q[2]+'</b><br>✅ '+q[3][q[4]]+'<br><small>'+q[5]+'</small></p><hr>').join('');show('other')}
+function records(){$('title').textContent='🏆 رکوردها';$('content').innerHTML='بهترین امتیاز: '+fa(store.best)+'<br>بازی‌های انجام‌شده: '+fa(store.played);show('other')}
+function share(){let t='🌈 رنگین‌دانش؛ بازی فارسی اطلاعات عمومی و هوش، قابل اجرا به‌صورت آفلاین!';if(window.AndroidShare)AndroidShare.share(t);else if(navigator.share)navigator.share({title:'رنگین‌دانش',text:t});else alert(t)}
+home();
+</script></body></html>
